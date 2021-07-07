@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import Main from './Main';
@@ -10,8 +10,12 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmPopup from './ConfirmPopup';
+import ProtectedRoute from './ProtectedRoute';
+import Login from './Login';
+import Register from './Register';
 
 function App() {
+  const [loggedIn, setLoggedIn] = React.useState(true);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(
     false,
   );
@@ -142,15 +146,28 @@ function App() {
       <CurrentUserContext.Provider value={currentUser}>
         <Header />
 
-        <Main
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onEditAvatar={handleEditAvatarClick}
-          onCardClick={handleCardClick}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-        />
+        <Switch>
+          <ProtectedRoute
+            path="/"
+            loggedIn={loggedIn}
+            component={Main}
+            onEditProfile={handleEditProfileClick}
+            onAddPlace={handleAddPlaceClick}
+            onEditAvatar={handleEditAvatarClick}
+            onCardClick={handleCardClick}
+            cards={cards}
+            onCardLike={handleCardLike}
+            onCardDelete={handleCardDelete}
+          />
+
+          <Route path="/sign-in">
+            <Login />
+          </Route>
+
+          <Route path="/sign-up">
+            <Register />
+          </Route>
+        </Switch>
 
         <Footer />
 
@@ -188,4 +205,4 @@ function App() {
   );
 }
 
-export default App;
+export default withRouter(App);
