@@ -148,7 +148,7 @@ function App() {
 
         <Switch>
           <ProtectedRoute
-            // exact
+            exact
             path="/"
             loggedIn={loggedIn}
             component={Main}
