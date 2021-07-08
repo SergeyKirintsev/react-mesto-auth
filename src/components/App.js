@@ -169,10 +169,6 @@ function App() {
           <Route path="/sign-up">
             <Register />
           </Route>
-
-          <Route path="*">
-            <PageNotFound />
-          </Route>
         </Switch>
 
         <Footer />
