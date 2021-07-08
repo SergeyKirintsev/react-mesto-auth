@@ -13,7 +13,6 @@ import ConfirmPopup from './ConfirmPopup';
 import ProtectedRoute from './ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
-import PageNotFound from './PageNotFound';
 
 function App() {
   const [loggedIn, setLoggedIn] = React.useState(false);
@@ -149,7 +148,7 @@ function App() {
 
         <Switch>
           <ProtectedRoute
-            exact
+            // exact
             path="/"
             loggedIn={loggedIn}
             component={Main}
