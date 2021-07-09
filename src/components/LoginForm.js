@@ -48,7 +48,8 @@ function LoginForm({ title, submitBtnText, onSubmit, children, comp }) {
       <button type="submit" className="login-form__submit btn-hover">
         {submitBtnText}
       </button>
-      {children}
+
+      <p className="login-form__wrap-link">{children}</p>
     </form>
   );
 }

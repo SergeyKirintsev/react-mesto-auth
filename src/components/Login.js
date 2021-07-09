@@ -1,11 +1,7 @@
 import LoginForm from './LoginForm';
 
-function Login() {
-  const signIn = ({ email, password }) => {
-    console.log('signIn', email, password);
-  };
-
-  return <LoginForm title="Вход" submitBtnText="Войти" onSubmit={signIn} />;
+function Login({ onSignIn }) {
+  return <LoginForm title="Вход" submitBtnText="Войти" onSubmit={onSignIn} />;
 }
 
 export default Login;

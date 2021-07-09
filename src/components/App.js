@@ -1,10 +1,11 @@
 import React from 'react';
-import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter, useHistory } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import Main from './Main';
 import ImagePopup from './ImagePopup';
 import api from '../utils/api';
+import auth from '../utils/auth';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
@@ -13,9 +14,14 @@ import ConfirmPopup from './ConfirmPopup';
 import ProtectedRoute from './ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
+import InfoTooltip from './InfoTooltip';
 
 function App() {
+  const history = useHistory();
+  const [isResponseFail, setIsResponseFail] = React.useState(false);
   const [loggedIn, setLoggedIn] = React.useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
+
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(
     false,
   );
@@ -40,6 +46,38 @@ function App() {
         console.log('Promise.all', err);
       });
   }, []);
+
+  function showInfoTooltip(isError, err = null) {
+    if (err) console.log(err);
+    setIsResponseFail(isError);
+    setIsInfoTooltipOpen(true);
+  }
+
+  function handleRegistration(formData) {
+    auth
+      .registration(formData)
+      .then((res) => {
+        if (res.data) {
+          showInfoTooltip(false);
+          history.push('/sign-in');
+        }
+      })
+      .catch((err) => showInfoTooltip(true, err));
+  }
+  // mail_555@mail.ru
+  // 55555
+  function handleAuthorization(formData) {
+    auth
+      .authorization(formData)
+      .then((res) => {
+        console.log(res);
+        if (res.token) {
+          setLoggedIn(true);
+          history.push('/');
+        }
+      })
+      .catch((err) => showInfoTooltip(true, err));
+  }
 
   function handleCardDeleteAfterConfirm() {
     setIsLoading(true);
@@ -100,6 +138,7 @@ function App() {
     setSelectedCard(null);
     setIsLoading(false);
     setIdCardForDelete(null);
+    setIsInfoTooltipOpen(false);
   };
 
   const handleUpdateUser = (user) => {
@@ -147,8 +186,16 @@ function App() {
         <Header />
 
         <Switch>
+          <Route path="/sign-in">
+            <Login onSignIn={handleAuthorization} />
+          </Route>
+
+          <Route path="/sign-up">
+            <Register onSignUp={handleRegistration} />
+          </Route>
+
           <ProtectedRoute
-            exact
+            // exact
             path="/"
             loggedIn={loggedIn}
             component={Main}
@@ -160,14 +207,6 @@ function App() {
             onCardLike={handleCardLike}
             onCardDelete={handleCardDelete}
           />
-
-          <Route path="/sign-in">
-            <Login />
-          </Route>
-
-          <Route path="/sign-up">
-            <Register />
-          </Route>
         </Switch>
 
         <Footer />
@@ -200,6 +239,12 @@ function App() {
           onClose={closeAllPopups}
           onConfirmDeleteCard={handleCardDeleteAfterConfirm}
           isLoading={isLoading}
+        />
+
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          onClose={closeAllPopups}
+          isResponseFail={isResponseFail}
         />
       </CurrentUserContext.Provider>
     </div>
