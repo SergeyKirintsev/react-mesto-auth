@@ -9,6 +9,7 @@
   border-bottom: 2px solid #ccc;
   padding: 13px 5px;
   margin-bottom: 30px;
+  outline: none;
 }
 
 .login-form__input::placeholder {

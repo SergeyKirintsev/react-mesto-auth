@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function LoginForm({ title, submitBtnText, onSubmit }) {
+function LoginForm({ title, submitBtnText, onSubmit, children, comp }) {
   const [inputValues, setInputValues] = useState({});
 
   const handleInputChange = (e) => {
@@ -13,7 +13,7 @@ function LoginForm({ title, submitBtnText, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // onSubmit(inputValues);
+    onSubmit(inputValues);
   };
 
   return (
@@ -40,14 +40,15 @@ function LoginForm({ title, submitBtnText, onSubmit }) {
           value={inputValues.password || ''}
           placeholder="Пароль"
           required
-          minLength="2"
-          maxLength="20"
+          minLength="5"
           aria-label="Поле для ввода пароля"
         />
       </section>
-      <button type="submit" className="login-form__submit btn-hover" on>
+      {comp}
+      <button type="submit" className="login-form__submit btn-hover">
         {submitBtnText}
       </button>
+      {children}
     </form>
   );
 }
