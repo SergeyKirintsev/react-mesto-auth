@@ -15,9 +15,11 @@ import ProtectedRoute from './ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
 import InfoTooltip from './InfoTooltip';
+import Token from '../utils/token';
 
 function App() {
   const history = useHistory();
+  const [email, setEmail] = React.useState(null);
   const [isResponseFail, setIsResponseFail] = React.useState(false);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
@@ -37,6 +39,22 @@ function App() {
   const [idCardForDelete, setIdCardForDelete] = React.useState(null);
 
   React.useEffect(() => {
+    const token = Token.getToken();
+    if (token) {
+      auth
+        .checkToken(token)
+        .then(({ data }) => {
+          setEmail(data.email);
+          setLoggedIn(true);
+          history.push('/');
+        })
+        .catch((err) => showInfoTooltip(true, err));
+    } else {
+      console.log('Нет токена');
+    }
+  }, [history]);
+
+  React.useEffect(() => {
     Promise.all([api.getUserInfo(), api.getCards()])
       .then(([userData, cardsData]) => {
         setCurrentUser(userData);
@@ -47,13 +65,19 @@ function App() {
       });
   }, []);
 
+  function handleSignOut() {
+    Token.removeToken();
+    setEmail(null);
+    setLoggedIn(false);
+  }
+
   function showInfoTooltip(isError, err = null) {
     if (err) console.log(err);
     setIsResponseFail(isError);
     setIsInfoTooltipOpen(true);
   }
 
-  function handleRegistration(formData) {
+  function handleRegister(formData) {
     auth
       .registration(formData)
       .then((res) => {
@@ -66,13 +90,14 @@ function App() {
   }
   // mail_555@mail.ru
   // 55555
-  function handleAuthorization(formData) {
+  function handleLogin(formData) {
     auth
       .authorization(formData)
-      .then((res) => {
-        console.log(res);
-        if (res.token) {
+      .then(({ token }) => {
+        if (token) {
+          Token.saveToken(token);
           setLoggedIn(true);
+          setEmail(formData.email);
           history.push('/');
         }
       })
@@ -183,15 +208,19 @@ function App() {
   return (
     <div className="page">
       <CurrentUserContext.Provider value={currentUser}>
-        <Header />
+        <Header
+          userEmail={email}
+          loggedIn={loggedIn}
+          onSignOut={handleSignOut}
+        />
 
         <Switch>
           <Route path="/sign-in">
-            <Login onSignIn={handleAuthorization} />
+            <Login onLogin={handleLogin} />
           </Route>
 
           <Route path="/sign-up">
-            <Register onSignUp={handleRegistration} />
+            <Register onRegister={handleRegister} />
           </Route>
 
           <ProtectedRoute

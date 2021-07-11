@@ -10,7 +10,7 @@ class Token {
   }
 
   static getToken() {
-    localStorage.getItem(this.key);
+    return localStorage.getItem(this.key);
   }
 }
 

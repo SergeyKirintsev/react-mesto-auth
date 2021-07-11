@@ -1,7 +1,7 @@
 import LoginForm from './LoginForm';
 
-function Login({ onSignIn }) {
-  return <LoginForm title="Вход" submitBtnText="Войти" onSubmit={onSignIn} />;
+function Login({ onLogin }) {
+  return <LoginForm title="Вход" submitBtnText="Войти" onSubmit={onLogin} />;
 }
 
 export default Login;
